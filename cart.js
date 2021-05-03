@@ -5,28 +5,28 @@ cart.use(express.json());
 
 items = [
   {
-    id: "Coke",
+    id: 1,
     product: "Coke",
     price: 1.25,
-    quantity: 5,
+    quantity: 5
   },
   {
-    id: "Hat",
+    id: 2,
     product: "Hat",
     price: 17,
-    quantity: 3,
+    quantity: 3
   },
   {
-    id: "Watch",
+    id: 3,
     product: "Watch",
     price: 220,
-    quantity: 1,
+    quantity: 1
   },
   {
-    id: "Coke",
-    product: "Coke",
-    price: 1.25,
-    quantity: 5,
+    id: 4,
+    product: "Cheetos",
+    price: .59,
+    quantity: 3
   },
 ];
 
@@ -34,23 +34,45 @@ cart.get("/cart-items", (req, res) => {
   res.json(items);
 });
 
-cart.get("/cart/:id", (req, res) => {
+cart.get("/cart-items/:id", (req, res) => {
   console.log(req.params.id);
-  res.json("Getting a student..");
+  res.json(items.find((item) =>{
+    return +req.params.id === item.id
+  }))
 });
 
-cart.post("/cart", (req, res) => {
+cart.post("/cart-items", (req, res) => {
   console.log(req.body);
-
-  res.json("Adding a students..");
+  items.push(req.body)
+  
+  items[items.length-1].id = items.length
+  console.log(items)
+  res.json(items.find((item)=>{
+    return items.length === item.id
+  }));
+  
 });
 
-cart.put("/cart", (req, res) => {
-  res.json("Updating students..");
+cart.put("/cart-items/:id", (req, res) => {
+  for (let item of items){
+    if(item.id === +req.params.id){
+      item.product = req.body.product
+      item.price = req.body.price
+      item.quantity = req.body.quantity
+    }
+  }
+  res.json(items.find((item) =>{
+    return +req.params.id === item.id
+  }))
 });
 
-cart.delete("/cart", (req, res) => {
-  res.json("Deleting a students..");
+cart.delete("/cart-items/:id", (req, res) => {
+  for(let item of items){
+    if (+req.params.id === item.id){
+      console.log(item)
+      items.splice((req.params.id - 1), 1)
+    }
+  };
 });
 
 cart.get("/search", (req, res) => {
