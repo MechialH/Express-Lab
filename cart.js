@@ -12,7 +12,7 @@ items = [
   },
   {
     id: 2,
-    product: "Hat",
+    product: "Fancy Hat",
     price: 17,
     quantity: 3
   },
@@ -31,7 +31,27 @@ items = [
 ];
 
 cart.get("/cart-items", (req, res) => {
-  res.json(items);
+  let maxPrice = req.query.maxPrice
+  let prefix = req.query.prefix
+  let pageSize = req.query.pageSize
+  let filtered = items
+  if(maxPrice){
+    filtered = items.filter(item => item.price <= maxPrice)
+  }
+
+  if(prefix){
+    filtered = items.filter(item => String(item.product).startsWith('Fancy'))
+  }
+
+  if(pageSize){
+    filtered = items.filter(item => item.id <= pageSize)
+  }
+
+  // if(filtered){
+  //   res.json(filtered)
+  // }else{
+    res.json(filtered)
+  // }
 });
 
 cart.get("/cart-items/:id", (req, res) => {
@@ -114,11 +134,6 @@ cart.delete("/cart-items/:id", (req, res) => {
     }
   };
   res.status(204).json('No content found')
-});
-
-cart.get("/search", (req, res) => {
-  console.log(req.query.keyword);
-  res.json("Search Results");
 });
 
 module.exports = cart;
