@@ -35,44 +35,85 @@ cart.get("/cart-items", (req, res) => {
 });
 
 cart.get("/cart-items/:id", (req, res) => {
-  console.log(req.params.id);
-  res.json(items.find((item) =>{
-    return +req.params.id === item.id
-  }))
+  const found = items.find(item => item.id === +req.params.id )
+  
+  if(!found){
+    res.status(404).send("The cart item could not be found")
+
+  }else{
+    res.json(found)
+  }
+    
 });
 
+// cart.get("/cart-items/:id", (req, res) => {
+//   console.log(req.params.id);
+//   res.json(items.find((item) =>{
+//     return +req.params.id === item.id
+//   }))
+// });
+
 cart.post("/cart-items", (req, res) => {
-  console.log(req.body);
-  items.push(req.body)
   
-  items[items.length-1].id = items.length
-  console.log(items)
-  res.json(items.find((item)=>{
-    return items.length === item.id
-  }));
+  const quantity = parseInt(req.body.quantity)
+
+  if(!quantity){
+    return res.status(400).send('Invalid quantity')
+  }
+
+  const price = parseInt(req.body.price)
+
+  if(!price){
+    return res.status(400).send('Invalid price')
+  }
+
+  const newItem = {
+    id: items.length +1,
+    product: req.body.product,
+    price: req.body.price,
+    quantity: req.body.price
+}
+  items.push(newItem)
+
+  res.status(201).json(newItem)
   
 });
 
 cart.put("/cart-items/:id", (req, res) => {
-  for (let item of items){
-    if(item.id === +req.params.id){
-      item.product = req.body.product
-      item.price = req.body.price
-      item.quantity = req.body.quantity
-    }
+  const quantity = parseInt(req.body.quantity)
+
+  if(!quantity){
+    return res.status(400).send('Invalid quantity')
   }
-  res.json(items.find((item) =>{
-    return +req.params.id === item.id
-  }))
+
+  const price = parseInt(req.body.price)
+
+  if(!price){
+    return res.status(400).send('Invalid price')
+  }
+
+  const found = items.find(item => item.id === +req.params.id )
+
+  if(!found){
+    res.status(404).send("The cart item could not be found")
+
+  }else{
+    found.price = req.body.price
+    found.product = req.body.product
+    found.quantity = req.body.quantity
+
+    res.json(found)
+  }
 });
 
 cart.delete("/cart-items/:id", (req, res) => {
   for(let item of items){
-    if (+req.params.id === item.id){
+    if (item.id === +req.params.id){
       console.log(item)
       items.splice((req.params.id - 1), 1)
     }
   };
+  res.status(204).json('No content found')
 });
 
 cart.get("/search", (req, res) => {
