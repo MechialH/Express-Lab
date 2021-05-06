@@ -40,7 +40,7 @@ cart.get("/cart-items", (req, res) => {
   }
 
   if(prefix){
-    filtered = items.filter(item => String(item.product).startsWith('Fancy'))
+    filtered = items.filter(item => String(item.product).startsWith(prefix))
   }
 
   if(pageSize){
